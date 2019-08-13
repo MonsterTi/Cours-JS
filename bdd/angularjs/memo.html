@@ -1,0 +1,291 @@
+<!-- /// ANGULAR JS ///
+// Un framework est un cadre de travail avec une facon de faire le code, contrairement à une bibliotheque.
+// Angular mets à jour le template mais aussi les données du modéle, en fonction des directives, des controleurs..
+
+
+// Pour débuter nous de vons appeller notre fichier angular.
+// Pour démarrer notre application html manuellement nous devons faire un demarrage en bootstrap (ne pas utiliser ng-app)
+// Nous devons créer un module pour (c'est déclarer un nom)
+
+// Notre code source (classique sans inspecteur) reste le meme, Angular le transforme le DOM qui est compilé (voir avec inspecteur)
+
+// Pour ce faire nous devons charger d'abord Angular dans notre page html. -->
+<script>
+ angularjsExercice1 = angular.bootstrap(window.document, ['angularjsExercice2'], {strickDi: true});
+</script>
+        <!-- 
+        // on démarrer angular avec 3 arguments.
+        // Premiérement sa portée (window.document)
+        // Deuxiément une liste de module (optionnel) avec lequel il va démarer 
+        // Troisiéme arguments (optionnel) un objet qui est facultative est strickDiv: true (cela veut dire si nous souhaitons une indépendance stric) 
+        -->
+
+<!-- LES EXPRESSIONS  -->
+//
+//
+//
+//
+<!-- Ceci est une expression -->
+<h4>{{'Bonjour ' + 'à tous'}}</h4>
+<p> {{ 5 > 2}}</p></h4>
+<!-- Ceci affichera true sur mon dom  -->
+<p>{{ 2 + 3 * 5 }}</p>
+<!-- Tous les calculs sont possible -->
+<p>{{ resultat = 3 * 100 }}</p>
+<!-- Nous avons notre 3 * 100 qui est une expression  -->
+<!-- Nous pouvons créer des propriétes du $scop (des variables de notre objet angular) (resultat est une propriété du $scop)
+//Toutes les propriétes sont créer dans notre $scop
+Si nous créons pas de controleur (notre propriété sera rattaché au $scop de bases) -->
+//
+//
+//
+//
+<p>{{ autreResultat = resultat + 50; "Le resultat final : " + autreResultat}}</p>
+<!-- Ici nous avons créer une seconde propriété dans notre $scop -->
+<p ng-init="message = coucou"> {{ message }}</p>
+<!-- Nous allons créer une directive (ng-init) dans lequel on affichera une valeur  -->
+<!-- Dans notre directive nous avons une propriété du $scop -->
+<p>{{ 'BoNjoUr' | lowercase }}</p>
+<!-- Nous pouvons faire passer un filtre a angular et transformer notre texte 
+Poue faire un filtre nous devons faire un trait | puis le nom de la fonction à executer 
+On peut passer un fil pour transformer notre 'bonjour' en miniscule -->
+<!-- Point important nous pouvons créer nos propres filtres -->
+//
+//
+//
+//
+<!-- LES DIRECTIVES ngShow - ngHide - ngIF -->
+<!-- Point important : je ne peux pas déclarer de fonction avec ng-init -->
+<p ng-init="bonjour = 'Hello worl' "> Je peux l'afficher ou pas {{ bonjour }} </p>
+<!-- Ce sont de mot clé dans les balises html qui vont appliquer un comportement  -->
+<!-- bonjour = 'Hello worl' est une expression-->
+<!-- {{ bonjour }} est une template et bonjour à l'intérieur est une expression -->
+<!-- Par exemple ng-init est une directive, avec le quel on peut déclarer une propriété (variable) et l'afficher plus tard.. -->
+<p ng-init="monTableau = ['Yann', 'Linda', 'Emmanuelle', 'Frank']">Ici je l'affiche {{ monTableau[0] }}</p>
+<!-- un second exemple ou je peux créer une nouvelle propriété (variable) qui contient un tableau -->
+//
+//
+//
+//
+<!-- La directive ng-repeat  -->
+<!-- Nous avons également une directive qui s'appelle ng-repeat avec le quel je peux boucler les élements qui sont dans mon tableau par exemple  -->
+<!-- ng-repeat va cloner les balises mais aussi boucler notre tableau, objets.. -->
+<p ng-repeat="eleve in monTableau">{{ eleve }}</p>
+<!-- Ici je créer une propriété eleve qui va decomposer mon tableau est afficher chacun des eleves  -->
+<!-- Je rajoute {{ eleve }} pour m'afficher tous les éléves avec la création de nouvelle balises p pour chacun des éléves -->
+
+<div ng-init="autreTableau = ['Linda', 'Nicolas', 'Nicolas'] "></div>
+<p ng-repeat="autreeleve in autreTableau"> {{ autreeleve }}</p>
+<!-- Nous pouvons avoir des erreurs si nous avons des doublons (par ex: Nicolas est un doublons)-->
+<!-- Ceci affichera une erreur dans notre console et le code ne fonctionnera pas  -->
+<p ng-repeat="autreeleve in autreTableau track by $index"> {{ autreeleve }}</p>
+<!-- Nous pouvons rajouter un track pour régler ce probléme qui va rajouter dans sa mémoire un indice pour chacun des éléments dans le tableau -->
+<!-- Par exemple Linda aura un indice de 1, Nicolas de 2, Nicolas de 3 (elle ne seront visible que par la machine) -->
+//
+<!-- ng-show -->
+<!-- ngShow / ngHide appliquent des classes CSS qui affichent ou masquent le contenu -->
+<p ng-show="true">Test est affiché"</p>
+<p ng-show="false">Test est pas affiché</p>
+<!-- la directive ng-show prent une valeur 'true ou false' et va afficher le contenue ou pas.  -->
+<!--  -->
+<!-- ng-hide -->
+<p ng-hide="true">Test est pas affiché"</p>
+<p ng-hide="false">Test est affiché"</p>
+<!-- Nous pouvons utiliser églement la directive ng-hide pour masquer ou afficher un élement  -->
+<!--  -->
+<p ng-hide=" 5 > 2">Test est pas affiché"</p>
+<!-- Nous pouvons rajouter des expressions et les évaluer par exemple  -->
+<!-- Toutes fois il reste présent dans notre dom, le style css est simplement en display: none -->
+<!--  -->
+<!--  -->
+<!-- ng-if -->
+<p ng-if="false"> Ce contenu n'est plus présent dans le DOM</p>
+<p ng-if="true"> Ce contenu est présent dans le DOM</p>
+<!-- ng-if retire l'élement p du dom (donc n'existe plus sur le dom) ou sinon le réinjecte et affiche la balise-->
+//
+//
+//
+//
+<!-- Les directive  -->
+<!-- Les directives sont dans des balises html personnalisé.  
+Par ex : <div ma-directive></div> et <ma-directive></ma-directive> sont des directives personalisées
+-->
+<div ma-directive></div>
+    <ma-directive></ma-directive>
+
+    <script src="./lib/angular.min.js"></script>
+    <script>
+        var monModule = angular.module('monModulePrincipal', []);
+        monModule.directive('maDirective', function() {
+            var monObjetDeConf = {
+                restrict: 'E',
+                template: '<h1>Ma première directive perso !</h1>'
+            }
+            return monObjetDeConf;
+        });
+        angular.bootstrap(window.document, ['monModulePrincipal'], { strictDi: true });
+    </script>    
+//
+//
+//
+//
+
+<!-- Les directive intégrer au controleur en IIFE -->
+<div ng-controller="monController1"></div> 
+<!-- // Les directives vont toujours dans le div de monController -->
+<p>{{ monCtrl.saisie }}</p>
+
+/// Exemple 2
+<div ng-controller="monController1">
+<input type="texte" ng-model="monCtrl.saisie">
+<p>{{ monCtrl.saisie }}</p>
+</div>
+
+</body>
+
+<script>
+ (function () {
+    'use strict'
+    angular.module('angularmonmodule', [])
+    .controller('monController1', ['$scope', function(contexte) {
+        contexte.monCtrl =  {
+            saisie: 'Bonjour'
+        }
+    }])
+    .directive('maDirective', []);
+    angularjsExercice1 = angular.bootstrap(window.document, ['angularmonmodule'], {strickDi: true}); 
+    
+    })();
+</script>
+
+//
+//
+//
+//
+//
+//
+
+<!-- LES CONTROLEURS -->
+<!-- Les controleurs c'est ce qui fait du travail, créer des fonctions, manipuler les données (ce sont les fonctions, objets d'angular) etc.. -->
+<!-- Je vais définir un controleur avec la création d'un nouveau $scope -->
+<!-- J'ai crée mon module de controleur  -->
+<!-- mon Module (getter)
+un module existant que nous appelons pour l'utiliser  -->
+<!-- var monModuleExistant = angular.module('monModulePrincipal', []) -->
+<!-- à ce moment je peux executer mon controleur et le rajouter  -->
+<div ng-controller="angularjsexistant1">
+    <p>{{ bonjour }}</p>
+    <p>{{ direBonjour() }}</p>
+    <button type="button" ng-click="ajouter()"></button>
+        <div ng-controller="angularjsexistant2">
+        <p ng-repeat="monNgrepeat in eleves track by $index">{{ monNgrepeat }}</p>
+        <p>{{ bonjour }}</p> <!-- J'ai également accés à ma propriété bonjour qui est une propriété de angularjsexistant1 que j'ai hérité lorsque je le mets en parent de angularjsexistant2-->
+        
+        </div> 
+</div>
+<p>{{ bonjour }}</p> <!-- N'affichera rien car elle n'est pas dans la div de mon controller-->
+
+<script>
+var monModuleExistant = angular.module('monModulePrincipal', [])
+
+monModuleExistant.controller('angularjsexistant1', ['$scope', function ($scope) {
+    $scope.bonjour = 'Bonjours les divs JS 09'; // J'ai rajouté à ma nouvelle scope une propriéte bonjour
+    $scope.direBonjour = function () {
+        return 'Coucou'
+    };
+}]); 
+monModuleExistant.controller('angularjsexistant2', ['$scope', function ($scope) {
+    $scope.eleves = ['Amelie', 'Remi', 'Adrien', 'Frederic']; 
+    // J'ai rajouté à ma nouveau Controller un scope  et un tableau eleve
+    $scope.ajouter = function () {
+       $scope.eleves.push('Helga')
+        // je peux également rajouter une fonction et rendre dynamique mon dom
+    }
+}]); 
+-->
+angular.bootstrap(window.document, ['angularjsexistant1'], {strickDi: true});
+</script>
+
+//
+//
+//
+//
+//
+//
+
+<!-- UN SECOND EXEMPLE DE CONTROLEUR () -->
+<div ng-controller="monController1">
+    <h2>Contrôleur 1 - manipule directement le $scope</h2>
+    <input type="texte" ng-model="monCtrl.saisie">
+    <p>{{ monCtrl.saisie }}</p>
+    <p ng-if="monCtrl.estUnPalindrome()">Ce mot est un palindrome</p>
+</div>
+
+<div ng-controller="MonController2 as monCtrl2">
+    <h2>Contrôleur 2 - manipule une instance nommée via controllerAs</h2>
+    <input type="texte" ng-model="monCtrl2.saisie">
+    <p>{{ monCtrl2.saisie }}</p>
+    <p ng-if="monCtrl2.estUnPalindrome()">Ce mot est un palindrome</p>
+</div>
+
+<!-- mon script  -->
+<script src="./lib/angular.min.js"></script>
+    <script>
+        (function() {
+            'use strict';
+
+            angular.module('monModulePrincipal', [])
+            .controller('monController1', ['$scope', function(contexte) {
+                contexte.monCtrl = {
+                    saisie: 'Bonjour',
+                    estUnPalindrome: function() {
+                        console.log('monController1.estUnPalindrome()');
+                        var inverse = this.saisie.split('').reverse().join('');
+                        return inverse === this.saisie;
+                    }
+                }
+            }])
+            .controller('MonController2', [function() {
+                this.saisie = 'test';
+                this.estUnPalindrome = function() {
+                    console.log('MonController2.estUnPalindrome()');
+                    return this.saisie.split('').reverse().join('') === this.saisie;
+                }
+            }]);
+
+            angular.bootstrap(window.document, ['monModulePrincipal'], { strictDi: true });
+        })(); // IIFE
+    </script>
+
+//
+//
+
+ <!-- UN AUTRE EXEMPLE DE CONTROLEUR -->
+<div ng-controller="MonControleur1 as monCtrl1">
+    {{ monCtrl1.meteo }}
+</div>
+
+<script src="./lib/angular.min.js"></script>
+<script>
+    (function() {
+        'use strict';
+        angular.module('monModulePrincipal', [])
+        .config(['$logProvider', function($logProvider) {
+            $logProvider.debugEnabled(false);
+        }])
+        .controller('MonControleur1', ['$log', function(logger) {
+            this.meteo = 'Il neige !';
+            logger.debug('Un message de debug');
+        }]);
+
+        angular.bootstrap(window.document, ['monModulePrincipal'], { strictDi: true });
+
+    })(); // IIFE
+</script>
+///
+///
+///
+///
+///
+///
+///

@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>Mémento mongoDB</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width">
+    <meta name="copyright" content="Copyright © 2015 VirtuoWorks. Tous droits réservés">
+    <meta name="author" content="VirtuoWorks | www.virtuoworks.com">
+    <link rel="shortcut icon" href="sources_cours/images/favicon.ico">
+		<link rel="stylesheet" href="sources_cours/styles.css" />
+    <link rel="stylesheet" href="sources_cours/prism.css" />
+		<script src="sources_cours/prism.js"></script>
+		<script src="sources_cours/jquery-1.11.3.min.js"></script>
+		<script>
+			$( document ).ready(function(){
+        function masquer(etat){
+          changementMenu();
+          $('.content').each(function(){
+            $(this).css('display',etat);
+          });
+        };
+        masquer('none');
+        function masquageFiltre(duree){
+          $('#filtre').animate({opacity: 0}, duree, function(){
+            $(this).hide();
+          });
+        };
+        function changementMenu(){
+          if($(window).width() < 864){
+            var refHeader = $('header');
+            var duree = 600;
+            var valeur = refHeader.height();
+            if (parseFloat(refHeader.css('top')) == -valeur) {
+              $('#filtre').animate({opacity: 0.8}, duree).show();
+              refHeader.animate({top: 0}, duree);
+            } else {
+              refHeader.animate({top: -valeur}, duree);
+              masquageFiltre(duree);
+            }
+          }
+        };
+        $(window).resize(function(){
+          if ($(window).width() >= 864) {
+            masquageFiltre(100);
+            if ($('header').attr('style')) {
+              $('header').removeAttr('style');
+            }
+          }
+        });
+        $('#bouton-nav, nav li').click(function(){
+          changementMenu();
+        });
+				$('h2>.triangle').on('click',function(){
+					$(this).toggleClass('haut bas');
+					$(this).parent().siblings('.content').toggle();
+				});
+        $('#masquage').on('click',function(){
+          var balise = $(this);
+          if (balise.text() == 'Tout replier') {
+            balise.text('Tout afficher');
+            masquer('none');
+          } else {
+            balise.text('Tout replier');
+            masquer('block');
+            changementMenu()
+          }
+        });
+			})
+		</script>
+		
+	</head>
+	<body>
+		<div id="page">
+      <header>
+        <h1>Mémento mongoDB</h1>
+        <nav>
+          <ul>
+            <li><a href="#organisation">Organisation de mongoDB</a></li>
+            <li><a href="#inserer">Insérer</a></li>
+            <li><a href="#lire">Lire</a></li>
+            <li><a href="#maj">Mettre à jour</a></li>
+            <li><a href="#supprimer">Supprimer</a></li>
+            <li><a href="#aggregation">Aggrégation</a></li>
+            <li><a href="#operateursrequete">Opérateurs de requête</a></li>
+            <li><a href="#operateursprojection">Opérateurs de projection</a></li>
+            <li><a href="#operateursmaj">Opérateurs de mise à jour</a></li>
+            <li><a href="#autresmethodes">Autres méthodes</a></li>
+          </ul>
+        </nav>
+        <div id="bas">
+          <div id="info">
+            <a href="http://www.virtuoworks.com/" title="Site de VirtuoWorks"><img src="sources_cours/images/logo.png" alt="logo virtuoworks"></a>
+            <a href="mailto:christophe.ollivier@virtuoworks.com">Christophe<br/> Ollivier</a>
+          </div>
+          <div id="changement">
+            <span id="masquage">Tout replier</span>
+          </div>
+        </div>
+        <div id="bouton-nav">&#9776;</div>
+      </header>
+
+<!-- Organisation -->
+			<div id="organisation">
+				<h2>Organisation de mongoDB<span class="triangle haut"></span></h2>
+        <h4>Notions de base, collection, documents, champ, relations</h4>
+				<div class="content">
+					<h4>Principes de base</h4>
+					<br/><p>mongoDB est un Système de Gestion de Base de Données (SGBD) Orienté Documents de la mouvance NoSQL (not-only SQL). Un serveur mongod peut contenir plusieurs <strong>bases</strong>. Chaque base peut être composée de plusieurs <strong>collections</strong>. Une collection est un ensemble de <strong>documents</strong>. Un document contient un ensemble de <strong>champs</strong> qui le caractérisent. Le champ identifiant est nommé <strong>_id</strong>.</p>
+          <br/>
+          <p>Correspondances entre modélisation de données, SGBDR(elationnel) et mongoDB</p>
+          <img src="sources_cours/images/correspondances_sgbd_mongodb.png" alt=""/><br/>
+          <h3>Relations</h3>
+          <br/><p>Les relations au sein de mongoDB peuvent se matérialiser de deux manières : par <strong>référence</strong> à la façon des SGBDR ou par <strong>document embarqué</strong>, ce qui bouleverse le paradigme de l'unicité des données.</p>
+          <h4>Références</h4>
+          <img src="sources_cours/images/data-model-normalized.png" alt="Référence mongoDB"/>
+          <h4>Document embarqué</h4>
+          <img src="sources_cours/images/data-model-denormalized.png" alt="Référence mongoDB"/>
+				</div>
+			</div>
+<!-- Insérer des documents-->
+      <div id="inserer" >
+				<h2>Insérer données<span class="triangle haut"></span></h2>
+        <h4>C :  create dans les opérations CRUD</h4>
+				<div class="content">
+					<h3>db.collection.insert(&lt;document&gt;)</h3>
+						<h4>Insère un document dans une collection</h4>
+<pre><code class="language-javascript">
+db.produits.insert({nom:"Crayon",prix:10.50})
+</code></pre>
+            
+            <h4>Insère un tableau de documents dans une collection</h4>
+						<pre><code class="language-javascript">
+db.produits.insert([{nom:"Crayon",prix:10.50}, {nom:"Gomme",prix:2.50}])</code></pre>
+				</div>
+			</div>
+<!-- Trouver des documents-->
+      <div id="lire" >
+				<h2>Trouver des documents<span class="triangle haut"></span></h2>
+        <h4>R :  read dans les opérations CRUD</h4>
+				<div class="content">
+          <h3>db.collection.find(&lt;query&gt;, &lt;projection&gt;)</h3>
+					<h4>Trouve des documents dans une collection en fonction des critères de &lt;query&gt; et renvoie les résultats en fonction des critères de &lt;projection&gt;. Le résultat est disponible dans un 'curseur'.</h4>
+         <pre><code class="language-javascript">
+db.produits.find({nom:"Crayon"})</code></pre>
+         <h4>Trouve les documents ayant pour nom 'Crayon' dans la collection produits.</h4><br/>
+         <pre><code class="language-javascript">
+db.produits.find(
+  {nom:"Crayon"},
+  {nom:1, prix:1, _id:0}
+)
+</code></pre>
+         <h4>Trouve les champs 'nom', 'prix' (et exclut de l'affichage le champ '_id') des documents ayant pour nom 'Crayon' dans la collection produits.</h4>
+				</div>
+			</div>
+<!-- Mettre à jour des documents-->
+      <div id="maj" >
+				<h2>Mettre à jour les documents<span class="triangle haut"></span></h2>
+				<h4>U :  update dans les opérations CRUD</h4>
+        <div class="content">
+          <h3>db.collection.update(&lt;query&gt;, &lt;update&gt;,&lt;options&gt;,)</h3>
+         <h4>Trouve des documents dans une collection en fonction des critères de &lt;query&gt; puis applique les mises à jour de &lt;update&gt; en tenant compte des &lt;options&gt;</h4>
+         <pre><code class="language-javascript">db.produits.update(
+   { sku: "abc123" },
+   { $inc: { quantity: -2, "metrics.orders": 1 } }
+))</code></pre>
+         <h4>Trouve les documents ayant pour 'sku' 'abc123' et modifie les champs 'quantity' et 'metrics.orders' dans la collection produits.</h4><br/>
+<h3>Options</h3>
+<h4><strong>multi</strong> <i>boolean</i>	Optionnel. Si défini à 'true', la mise à jour impactera tous les documents qui satisfont le critère de recherche.Si défini à 'false', la mise à jour impactera un seul document. False est la valeur par défaut</h4>
+<pre><code class="language-javascript">db.produits.update(
+   { }, // Sélectionne tous les documents sans distinction
+   { $set: { newfield: "Chaine" }}, // définit un nouveau champ 'newfield'
+   { multi: true} // La mise à jour aura lieu pour tous les documents
+))</code></pre>
+<h4><strong>upsert</strong> <i>boolean</i>	Optionnel. Si défini à 'true', crée un nouveau document si aucun document de satisfait le critère de requête ou met à jour le document s'il satisfait la requête. Si défini à 'false', ne fait que la mise à jour que si un document satisfait le critère de recherche. False est la valeur par défaut</h4>
+<pre><code class="language-javascript">db.produits.update(
+   { qty:5 }, // Sélectionne tous les documents qui ont le champ 'qty' = 5
+   { $set: { newfield: "Chaine" }}, // définit un nouveau champ 'newfield'
+   { upsert: true} // Si aucun document n'est retourné, un nouveau document sera créé
+))</code></pre>
+				</div>
+			</div>
+<!-- Supprimer des documents-->
+      <div id="supprimer" >
+				<h2>Supprimer des documents<span class="triangle haut"></span></h2>
+        <h4>D :  delete dans les opérations CRUD</h4>
+				<div class="content">
+          <h3>db.collection.remove(&lt;query&gt;, &lt;options&gt;,)</h3>
+          <h4>Supprime les documents d'une collection qui satisfont la requête en respectant les options</h4>
+ <pre><code class="language-javascript">db.produits.remove({ sku: "abc123" }));</code></pre>
+          <h4><strong>justOne</strong> Optionnel. Si défini à true, supprime un seul document. Si défini à false, supprime tous les documents satisfaisant la requête</h4>
+ <pre><code class="language-javascript">db.produits.remove({ sku: "abc123" }));</code></pre>
+				</div>
+			</div>
+<!-- Aggregation-->
+      <div id="aggregation" >
+				<h2>Aggrégation<span class="triangle haut"></span></h2>
+        <h4>Réaliser des opérations de groupement et de calcul lors des requêtes</h4>
+				<div class="content">
+          <h3>db.collection.aggregate(&lt;pipeline&gt;, &lt;options&gt;,)</h3>
+          <h4>Calcule des valeurs aggrégées pour les données d'une collection</h4>
+ <pre><code class="language-javascript">// Prenons des documents du type : {"_id":31705,"name":"31705 - CHAMPEAUX", "address":"RUE DES CHAMPEAUX", "latitude":48.86, "longitude":2.41, "zipCode":"75013"}
+ 
+ // Faisons l'aggregation suivante
+ db.velib.aggregate(
+	{$match:{zipCode:/75/}}, // On limite les enregistrements à ceux qui ont un code postal qui contiennent '75'
+	{$group:{ _id:"$zipCode", nbstations:{$sum:1}}}, 
+  //Notre champ de groupement est le champ 'zipCode', on définit un champ nbstations que l'on incrémente de 1 à chaque fois que l'on a le même code postal
+	{$sort:{nbstations:-1}}
+  // On trie par nombre décroissant
+  
+// Le résultat se présenterait ainsi :
+{ "_id" : "75015", "nbstations" : 48 }
+);</code></pre>
+<h3>Principales étapes du pipeline d'aggrégation</h3>
+<h4><strong>$project</strong> Remet en forme chaque document du flux en ajoutant des champs ou en retirant.</h4>
+<h4><strong>$match</strong>	Filtre le flux de documents selon une requête mongoDB pour limiter les documents passant à l'étape suivante du pipeline. Voir les opérateurs de requête</h4>
+<h4><strong>$limit</strong>	Passe les n premiers documents non modifiés au pipeline</h4>
+<h4><strong>$skip</strong>	Saute les n premiers documents</h4>
+<h4><strong>$unwind</strong>	Déconstruit un champ array d'un document en entrée pour créer un document pour chaque élément du tableau.</h4>
+<h4><strong>$group</strong>	Groupe les documents en entrée par un identifiant spécifié et applique l'expression d'accumulation (si elle est définie). Prend en entrée tous les documents du pipeline et crée en sortie un document pour chaque groupe distinct. Les documents en sortie contiennent uniquement le champ identifiant et, si spécifiés, les achamps accumulés.</h4>
+<h4><strong>$sort</strong>	Re-ordonne le flux de documents par une clé de filtrage. Seul l'ordre change ; les documents restent inchangés.</h4>
+<h4><strong>$out</strong> Redirige le flux de sortie vers une nouvelle collection</h4>
+				</div>
+			</div>
+<!-- Opérateurs de requête -->
+      <div id="operateursrequete" >
+				<h2>Opérateurs de requête<span class="triangle haut"></span></h2>
+        <h4>Pour cibler de manière précise les documents voulus</h4>
+				<div class="content">
+<h3>Opérateurs de comparaison</h3>
+<h4><strong>$eq</strong>	Sélectionne les documents qui correspondent à la valeur spécifiée</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { qty: { $eq: 20 } } );
+// Equivalent à
+db.inventory.find( { qty: 20 } );
+// où l'opérateur est implicite
+</code></pre>
+<h4><strong>$gt</strong>	Sélectionner les documents dont la valeur est supérieure à la valeur spécifiée</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { qty: { $gt: 20 } } );
+</code></pre>
+<h4><strong>$gte</strong>	Sélectionner les documents dont la valeur est supérieure ou égale à la valeur spécifiée</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { qty: { $gte: 20 } } )
+</code></pre>
+<h4><strong>$lt</strong>	Sélectionner les documents dont la valeur est inférieure à la valeur spécifiée</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { qty: { $lt: 20 } } )
+</code></pre>
+<h4><strong>$lte</strong>	Sélectionner les documents dont la valeur est inférieure ou égale à la valeur spécifiée</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { qty: { $lte: 20 } } )
+</code></pre>
+<h4><strong>$ne</strong>	Sélectionner les documents dont la valeur n'est pas égale à la valeur spécifiée</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { qty: { $ne: 20 } } );
+</code></pre>
+<h4><strong>$in</strong>	Sélectionner les documents dont la valeur correspond à une des valeurs spécifiées dans un tableau</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { qty: { $in: [ 5, 15 ] } } )
+</code></pre>
+<h4><strong>$nin</strong>	Sélectionner les documents dont la valeur ne correspond à aucune des valeurs spécifiées dans un tableau</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { qty: { $nin: [ 5, 15 ] } } )
+</code></pre>
+<h3>Opérateurs logiques</h3>
+<h4><strong>$or</strong>	Retourne tous les documents qui satisfont une des conditions (une condition OU l'autre condition)</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { $or: [ { quantity: 20 }, { price: 10 } ] } );
+// Il est possible de combiner les opérateurs
+db.inventory.find( { $or: [ { quantity: { $lt: 20 } }, { price: 10 } ] } )
+</code></pre>
+<h4><strong>$and</strong>	Retourne tous les documents qui satisfont toutes les conditions (une condition ET l'autre condition)</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { 
+    $and: [ 
+            { price: { $ne: 1.99 } }, 
+            { price: { $exists: true } } 
+           ] 
+    } )
+</code></pre>
+<h4><strong>$not</strong>	Inverse l'effet d'une requête et retourne les documents qui ne satisfont pas la requête</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { $and: [ { price: { $ne: 1.99 } }, { price: { $exists: true } } ] } )
+</code></pre>
+<h4><strong>$nor</strong>	Retourne les documents qui échouent à satisfaire les deux conditions</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { $nor: [ { price: 1.99 }, { sale: true } ]  } )
+</code></pre>
+<h3>Opérateurs d'élément</h3>
+<h4><strong>$exists</strong>	Retourne les documents qui ont le champ spécifié</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { qty: { $exists: true, $nin: [ 5, 15 ] } } )
+// Retourne les documents dont le champ 'qty' est défini et dont la valeur 
+// n'est ni 5, ni 15
+</code></pre>
+<h4><strong>$type</strong>	Retourne les documents si un champ est du type spécifié</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { tags: { $type : 2 } } );
+
+//  Type de données BSON
+//  Type	                  Numéro	    Notes
+//  Double	                  1	 
+//  String	                  2	 
+//  Object	                  3	 
+//  Array	                  4	 
+//  Binary data	              5	 
+//  Object id	              7	 
+//  Boolean	                  8	 
+//  Date	                  9	 
+//  Null	                  10	 
+//  Regular Expression	      11	 
+//  JavaScript  	          13	 
+//  Symbol	                  14	 
+//  JavaScript (with scope)   15	 
+//  32-bit integer	          16	 
+//  Timestamp	              17	 
+//  64-bit integer	          18	 
+//  Min key	                  255	        Requête avec -1
+//  Max key	                  127
+</code></pre>
+<h3>Evaluation</h3>
+<h4><strong>$mod</strong>	Réalise un modulo sur la valeur d'un champ et retourne les documents en fonction du résultat spécifié</h4>
+<pre><code class="language-javascript">
+db.inventory.find( { qty: { $mod: [ 4, 0 ] } } )
+// Retourne les documents de la collection 'inventory' pour lesquels le champ 'qty' modulo 4 est égal à 0
+</code></pre>
+<h4><strong>$regex</strong>	Retourne les documents dont la valeur satisfait à une expression régulière</h4>
+<pre><code class="language-javascript">
+db.products.find( { sku: { $regex: /^ABC/i } } )
+// Pour plus de détails sur les expressions régulières, voir par exemple : http://www.regexr.com/
+</code></pre>
+<h4><strong>$text</strong>	Réalise une recherche textuelle</h4>
+<pre><code class="language-javascript">
+db.articles.find( { $text: { $search: "coffee" } } )
+</code></pre>
+<h4><strong>$where</strong>	Retourne les documents qui satisfont une expression JavaScript</h4>
+<pre><code class="language-javascript">
+db.myCollection.find( { $where: "this.credits == this.debits" } );
+</code></pre>
+<h3>Opérateurs de tableau Array</h3>
+<h4><strong>$all</strong>	Retourne les documents dont un tableau contient tous les éléments spécifiés dans un tableau</h4>
+<pre><code class="language-javascript">
+db.articles.find( { tags: { $all: [ [ "ssl", "security" ] ] } } )
+// Equivalent à l'opérateur $and
+db.articles.find( { $and: [ { tags: [ "ssl", "security" ] } ] } )
+// Equivalent implicitement à 
+db.articles.find( { tags: [ "ssl", "security" ] } )
+</code></pre>
+<h4><strong>$elemMatch</strong>	Retourne les documents si un élément d'un tableau satisfait à toutes les conditions $elemMatch</h4>
+<pre><code class="language-javascript">
+db.scores.find(
+   { results: { $elemMatch: { $gte: 80, $lt: 85 } } }
+)
+</code></pre>
+<h4><strong>$size</strong> Retourne  les documents si un champ array a une taille spécifiée</h4>
+<pre><code class="language-javascript">
+db.collection.find( { field: { $size: 2 } } );
+// Renverrait par exemple { field: [ red, green ] } et { field: [ apple, lime ] } 
+// MAIS PAS les documents { field: fruit } ou { field: [ orange, lemon, grapefruit ] }
+</code></pre>
+<h3>Comments</h3>
+<h4><strong>$comment</strong>	Ajoute un commentaire à une requête. Utile pour laisser une trace dans les logs</h4>
+<pre><code class="language-javascript">
+db.records.find(
+   {
+     x: { $mod: [ 2, 0 ] },
+     $comment: "Find even values."
+   }
+)
+</code></pre>
+
+				</div>
+			</div>
+<!-- Opérateurs de projection-->
+      <div id="operateursprojection" >
+				<h2>Opérateurs de projection<span class="triangle haut"></span></h2>
+        <h4>Pour maitriser les champs renvoyés par une requête</h4>
+				<div class="content">
+<h4><strong>$</strong>	Projète le premier élément d'un tableau qui satisfait la condition de requête</h4>
+<pre><code class="language-javascript">
+db.etudiants.find( { semestre: 1, notes: { $gte: 85 } },
+                  { "notes.$": 1 } )</code></pre>
+<h4><strong>$elemMatch</strong>	Projète le premier élément d'un tableau qui satisfait la condition $elemMatch</h4>
+<pre><code class="language-javascript">db.schools.find( { zipcode: "63109" },
+                 { students: { $elemMatch: { school: 102 } } } )</code></pre>
+<h4><strong>$meta</strong>	Projète le score du document attribué durant une opération $text.</h4>
+<pre><code class="language-javascript">
+db.articles.find(
+   { $text: { $search: "cake" } },
+   { score: { $meta: "textScore" } }
+)</code></pre>
+<h4><strong>$slice</strong>	Limite le nombre d'éléments projetés depuis un tableau. Supporte les slices de 'skip' et 'limit'</h4>
+<pre><code class="language-javascript">
+db.posts.find( {}, { comments: { $slice: 5 } } )</code></pre>
+				</div>
+			</div>
+<!-- Opérateurs de mise à jour -->
+      <div id="operateursmaj" >
+      <h2>Opérateurs de mise à jour<span class="triangle haut"></span></h2>
+      <h4>Pour bien mettre à jour les documents</h4>
+				<div class="content">
+<h3>Opérateurs de champs</h3>
+<h4><strong>$inc</strong>	Incrémente la valeur d'un champ par la valeur spécifiée</h4>
+<pre><code class="language-javascript">db.products.update(
+   { sku: "abc123" },
+   { $inc: { quantity: -2, "metrics.orders": 1 } }
+)</code></pre>
+<h4><strong>$mul</strong>	Mulitplie la valeur d'un champ par la valeur spécifiée</h4>
+<pre><code class="language-javascript">db.products.update(
+   { _id: 1 },
+   { $mul: { price: 1.25 } }
+)
+</code></pre>
+<h4><strong>$rename</strong>	Renomme un champ</h4>
+<pre><code class="language-javascript">db.students.update( { _id: 1 }, { $rename: { "nmae": "name" } } )
+</code></pre>
+<h4><strong>$setOnInsert</strong>	Définit la valeur d'un champ si la mise à jour résulte en l'insertion d'un docuement. N'a pas d'effet sur les mises àjour qui impactent des documents existants</h4>
+<pre><code class="language-javascript">db.products.update(
+  { _id: 1 },
+  {
+     $setOnInsert: { defaultQty: 100 }
+  },
+  { upsert: true }
+)
+</code></pre>
+<h4><strong>$set</strong>	Définit la valeur d'un champ dans un document</h4>
+<pre><code class="language-javascript">db.products.update(
+   { _id: 100 },
+   { $set:
+      {
+        quantity: 500,
+        details: { model: "14Q3", make: "xyz" },
+        tags: [ "coats", "outerwear", "clothing" ]
+      }
+   }
+)
+// Remarque : si un document contient un sous-document embarqué, il faut y accéder avec un .
+db.products.update(
+   { _id: 100 },
+   { $set: { "details.make": "zzz" } }
+)
+</code></pre>
+<h4><strong>$unset</strong>	Supprime le champ spécifié d'un document</h4>
+<pre><code class="language-javascript">db.products.update(
+   { sku: "unknown" },
+   { $unset: { quantity: "", instock: "" } }
+)
+</code></pre>
+<h4><strong>$min</strong>	Met à jour le champ uniquement si la valeur spécifiée est inférieure à la valeur existante du champ</h4>
+<pre><code class="language-javascript">
+// Imaginons un document : { _id: 1, highScore: 800, lowScore: 200 }
+db.scores.update( { _id: 1 }, { $min: { lowScore: 150 } } )
+// Met à jour uniquement si la valeur spécifiée '150' est inférieure à la valeur actuelle de 'lowScore'. Ce qui est le cas.
+</code></pre>
+<h4><strong>$max</strong>	Met à jour le champ uniquement si la valeur spécifiée est supérieure à la valeur existante du champ</h4>
+<pre><code class="language-javascript">
+// Imaginons un document : { _id: 1, highScore: 800, lowScore: 200 }
+db.scores.update( { _id: 1 }, { $max: { highScore: 950 } } )
+// Met à jour uniquement si la valeur spécifiée '950' est supérieure à la valeur actuelle de 'highScore'. Ce qui est le cas.
+</code></pre>
+<h4><strong>$currentDate</strong>	Définit la valeur d'un champ à la date actuelle, au choix sous le format 'Date' ou 'Timestamp'</h4>
+<pre><code class="language-javascript">
+// Prenons le document : { _id: 1, status: "a", lastModified: ISODate("2013-10-02T01:11:18.965Z") }
+
+db.comm.update(
+   { _id: 1 },
+   {
+     $currentDate: {
+        lastModified: true,
+        "cancellation.date": { $type: "timestamp" }
+     },
+     $set: {
+        status: "D",
+        "cancellation.reason": "user request"
+     }
+   }
+)
+// Va mettre à jour le champ 'lastModified' au format 'ISODate'
+// Va créer à jour le champ 'cancellation.date' au format 'TimeStamp'
+</code></pre>
+<h3>Opérateurs de tableau</h3>
+<h4><strong>$</strong>	Met à jour le premier élément qui satisfait la requête</h4>
+<pre><code class="language-javascript">db.students.update(
+   { _id: 1, grades: 80 },
+   { $set: { "grades.$" : 82 } }
+)
+</code></pre>
+<h4><strong>$addToSet</strong>	Ajout des éléments à un tableau uniquement s'ils n'existent pas déjà</h4>
+<pre><code class="language-javascript">
+// Prenons le document : { _id: 1, letters: ["a", "b"] }
+db.test.update(
+   { _id: 1 },
+   { $addToSet: {letters: [ "c", "d" ] } }
+)
+// Va ajouter le tableau [ "c", "d" ] au champ 'letters'
+</code></pre>
+<h4><strong>$pop</strong>	Supprimer le premier ou le dernier élément d'un tableau</h4>
+<pre><code class="language-javascript">// Prenons le document : { _id: 1, scores: [ 8, 9, 10 ] }
+db.students.update( { _id: 1 }, { $pop: { scores: -1 } } )
+// Va transformer le document en { _id: 1, scores: [ 9, 10 ] }
+</code></pre>
+<h4><strong>$pullAll</strong>	Supprime toutes les valeurs correspondantes d'un tableau</h4>
+<pre><code class="language-javascript">// Prenons le document : { _id: 1, scores: [ 0, 2, 5, 5, 1, 0 ] }
+db.survey.update( { _id: 1 }, { $pullAll: { scores: [ 0, 5 ] } } )
+// Va transformer le document en { "_id" : 1, "scores" : [ 2, 1 ] }
+</code></pre>
+<h4><strong>$pull</strong>	Supprime toutes les entrées d'un tableau qui correspondent une requête</h4>
+<pre><code class="language-javascript">
+db.stores.update(
+    { }, // Requête
+    { $pull: { fruits: { $in: [ "apples", "oranges" ] }, vegetables: "carrots" } }, // Mise à jour
+    { multi: true } // Options
+)
+</code></pre>
+<h4><strong>$push</strong>	Ajoute une entrée à un tableau</h4>
+<pre><code class="language-javascript">db.students.update(
+   { _id: 1 },
+   { $push: { scores: 89 } }
+)
+</code></pre>
+<h3>Modifiers</h3>
+<h4><strong>$each</strong>	Modifie les opérateurs '$push' et '$addToSet' pour ajouter de multiples éléments lors de la mise à jour de 
+tableaux</h4>
+<pre><code class="language-javascript">db.students.update(
+   { name: "joe" },
+   { $push: { scores: { $each: [ 90, 92, 85 ] } } }
+)
+</code></pre>
+<h4><strong>$slice</strong>	Modifie l'opérateur '$push' pour limiter la taille des tableaux mis à jour</h4>
+<pre><code class="language-javascript">db.students.update(
+   { _id: 1 },
+   { $push: { scores: {
+               $each: [ 80, 78, 86 ],
+               $slice: -5
+              }
+            }
+   }
+)
+</code></pre>
+<h4><strong>$sort</strong>	Modifie l'opérateur '$push' pour ré-ordonner les documents enregistrés dans un tableau</h4>
+<pre><code class="language-javascript">db.students.update(
+   { _id: 1 },
+   {
+     $push: {quizzes: {
+               $each: [ { id: 3, score: 8 }, { id: 4, score: 7 }, { id: 5, score: 6 } ],
+               $sort: { score: 1 }
+              }
+            }
+   }
+)
+// Mettre à 1 pour le sens ascendant
+// Mettre à -1 pour le sens descendant
+</code></pre>
+<h4><strong>$position</strong>	Modifie l'opérateur '$push' pour spécifier la position où ajouter des éléments dans le tableau</h4>
+<pre><code class="language-javascript">// Prenons le document : { "_id" : 1, "scores" : [ 100 ] }
+db.students.update(
+   { _id: 1 },
+   {
+     $push: {
+        scores: {
+           $each: [ 50, 60, 70 ],
+           $position: 0
+        }
+     }
+   }
+)
+// Le document sera mis à jour ainsi : { "_id" : 1, "scores" : [  50,  60,  70,  100 ] }
+</code></pre>
+        </div>
+      </div>
+<!-- Autres méthodes-->
+      <div id="autresmethodes" >
+				<h2>Autres méthodes usuelles<span class="triangle haut"></span></h2>
+				<h4>Pour les besoins de tous les jours ! La liste complète est disponible sur le site de <a href="http://docs.mongodb.org/manual/reference/method/js-collection/">mongoDB</a></h4>
+        <div class="content">
+          <h3>db.collection.count(&lt;query&gt;)</h3>
+         <h4>Retourne le nombre de documents qui satisfont la requête &lt;query&gt; </h4>
+         <pre><code class="language-javascript">db.produits.count()
+// Equivalent à 
+db.produits.find().count()
+
+// Autre exemple 
+db.produits.count({nom:"Crayon"})
+// Equivalent à 
+db.produits.find({nom:"Crayon"}).count()</code></pre>
+<h3>cursor.pretty()</h3>
+         <h4>Retourne les résultats dans un format lisible</h4>
+         <pre><code class="language-javascript">db.books.find()
+{ "_id" : ObjectId("54f612b6029b47909a90ce8d"), "title" : "A Tale of Two Cities", "text" : "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness...", "authorship" : "Charles Dickens" }
+
+// Si on applique la méthode pretty()
+db.books.find().pretty()
+{ 
+  "_id" : ObjectId("54f612b6029b47909a90ce8d"), 
+  "title" : "A Tale of Two Cities", 
+  "text" : "It was the best of times, it was the worst of times, it was the age of wisdom, it was the age of foolishness...",      
+  "authorship" : "Charles Dickens" 
+}
+// Ce qui est quand même beaucoup plus sympa à lire
+</code></pre>
+<h4>Parcourir un curseur - hasNext()</h4>
+<pre><code class="language-javascript">
+var monCurseur = db.inventory.find( { type: 'food' } );
+
+while (monCurseur.hasNext()) {
+   printjson(monCurseur.next());
+}
+</code></pre>
+<h4>Parcourir un curseur - forEach()</h4>
+<pre><code class="language-javascript">
+var monCurseur =  db.inventory.find( { type: 'food' } );
+
+monCurseur.forEach(
+  printjson;
+  // Autres opérations
+);
+</code></pre>
+
+    </div>
+    </div>
+    </div>
+      <div id="remplissage">.</div>
+      <div id="filtre"></div>
+	</body>
+</html>
